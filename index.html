@@ -1,0 +1,340 @@
+<html>
+    <!-- TO DO (5 hours and 30 minutes spent):
+     - finish edit method (submit button needs to send edit, finish put request)
+        - perhaps inline editting (delete newNote (p tag) and replace with textarea to submit)
+        - onsubmit, text is updated and edit is sent
+        - https://medium.com/@9cv9official/what-are-get-post-put-patch-delete-a-walkthrough-with-javascripts-fetch-api-17be31755d28
+     - make name look better
+     - change background color?
+     - add image?
+
+     encrypted key: 6a228dc4c8fa7f9807Rec6a43113f786U4284
+    -->
+    <style>
+            input[type='radio']:after {
+                width: 15px; height: 15px;
+                border-radius: 15px; content: '';
+                top: -2px; left: -1px;
+                position: relative;
+                background-color: #d1d3d1; border: 2px solid black;
+                display: inline-block; visibility: visible;
+            }
+            input[type='radio']:checked:after {
+                width: 15px; height: 15px;
+                border-radius: 15px; content: '';
+                top: -2px; left: -1px;
+                position: relative;
+                border: 2px solid black;
+                display: inline-block; visibility: visible;
+            }
+            #radio-one:checked:after { background-color:tomato; }
+            #radio-two:checked:after { background-color:violet; }
+            #radio-three:checked:after { background-color:goldenrod; }
+            #radio-four:checked:after { background-color:cornflowerblue; }
+            #radio-five:checked:after { background-color:lightpink; }
+    </style>
+
+    <!-- to start json server: json-server --watch <filename>.json -->
+    <body style='background-color:thistle'>
+    <script>
+        const TEMP_URL = "http://localhost:3000"; // a note has a user, color, and text
+
+        // validate the user before they enter
+        let nameInput = document.createElement('input'); nameInput.type = 'text';nameInput.style.fontWeight = 'bold';
+        nameInput.style.width = '200px';nameInput.style.height = '30px';nameInput.style.border = 'solid black';
+        nameInput.style.fontFamily = '"Comic Sans MS", cursive, sans-serif';
+        let lblEnterName = document.createElement('h1'); lblEnterName.innerText = "Enter Your Name: ";
+        lblEnterName.style.fontFamily = '"Comic Sans MS", cursive, sans-serif';
+        let submitName = document.createElement('button'); submitName.innerText = "Enter";
+        submitName.style.fontFamily = '"Comic Sans MS", cursive, sans-serif';
+        submitName.style.width = '60px';submitName.style.height = '30px';submitName.style.border = 'solid black';
+        submitName.style.fontWeight = 'bold';
+        submitName.addEventListener('click',(event) => allowEnter(event));
+
+        let error = document.createElement('h3'); // if you are not recognized
+
+        // main page elements
+        let showText = false; // whether to show text field or not
+        let addText = document.createElement('button');
+        addText.style.fontWeight = 'bold'; addText.innerHTML = "Create a New Note &#x2193;";
+        addText.style.fontFamily = '"Comic Sans MS", cursive, sans-serif'; addText.style.border = 'solid black';
+        addText.addEventListener('click',toggleField); // add text button
+        let textForm = document.createElement('form'); // form to hold textarea
+        let contentDiv = null; // the div that will hold content
+        let input = document.createElement('textarea'); let submit = document.createElement('button');
+        input.style.fontFamily = '"Comic Sans MS", cursive, sans-serif';input.style.border = 'solid black';
+        input.style.fontWeight = 'bold'; input.style.padding = '20px';
+        submit.style.fontFamily = '"Comic Sans MS", cursive, sans-serif';submit.style.border = 'solid black';
+        let br1 = document.createElement('br'); let br2 = document.createElement('br'); let br3 = document.createElement('br');
+
+        // colored radio buttons
+        let checkColorOne = document.createElement('input'); // radio button 1
+        checkColorOne.id = "radio-one"; checkColorOne.type = 'radio'; checkColorOne.checked = true; checkColorOne.addEventListener('click',() => radioBoxCheck(checkColorOne));
+        let checkColorTwo = document.createElement('input'); // radio button 2
+        checkColorTwo.id = "radio-two"; checkColorTwo.type = 'radio'; checkColorTwo.addEventListener('click',() => radioBoxCheck(checkColorTwo));
+        let checkColorThree = document.createElement('input'); // radio button 3
+        checkColorThree.id = "radio-three"; checkColorThree.type = 'radio'; checkColorThree.addEventListener('click',() => radioBoxCheck(checkColorThree));
+        let checkColorFour = document.createElement('input'); // radio button 4
+        checkColorFour.id = "radio-four"; checkColorFour.type = 'radio'; checkColorFour.addEventListener('click',() => radioBoxCheck(checkColorFour));
+        let checkColorFive = document.createElement('input'); // radio button 5
+        checkColorFive.id = "radio-five"; checkColorFive.type = 'radio'; checkColorFive.addEventListener('click',() => radioBoxCheck(checkColorFive));
+        
+        // submit a new note
+        submit.type = "submit"; submit.onclick = (event) => appendNote(event); submit.innerText = "Add Note"; submit.style.fontWeight = 'bold';
+        input.rows = 5, input.cols = 50; input.style.border = "solid";
+        let noteDiv = document.createElement('div');
+        noteDiv.style.border = 'solid'; noteDiv.style.width = '150px'; noteDiv.style.height = '100px';
+        let allNotesDiv = null; let userDiv = null;
+
+        // when the dom content loads
+        document.addEventListener('DOMContentLoaded', function(){
+            console.log('DOM loaded')
+            contentDiv = document.getElementById("content");
+            userDiv = document.createElement('div');
+            userDiv.style.margin = '200px';
+            userDiv.appendChild(lblEnterName);
+            userDiv.appendChild(nameInput);
+            userDiv.appendChild(submitName);
+            userDiv.appendChild(error);
+            contentDiv.appendChild(userDiv);
+        })
+
+        // load existing notes from json server
+        function loadNotes() {
+            fetch(TEMP_URL + '/content')
+            .then(resp => resp.json())
+            .then(data => {
+                console.log(data);
+                for (var i = 0; i < data.length; i++) {
+                    let noteDiv = document.createElement('div'); // add a new note to the page
+                    noteDiv.style.border = 'solid'; noteDiv.style.justifyContent = 'center'; noteDiv.style.textAlign = 'center'; noteDiv.style.width = '200px'; noteDiv.style.height = '200px'; noteDiv.style.margin = '20px'; noteDiv.style.padding = '20px';
+                    let newNote = document.createElement("p");
+                    newNote.innerHTML = data[i]['text'];newNote.style.overflow = "auto";
+                    newNote.style.fontWeight = "bold";newNote.style.width = '200px';newNote.style.height = '175px';
+                    newNote.style.fontFamily = '"Comic Sans MS", cursive, sans-serif';
+                    let color = data[i]['color'];
+                    // set color of note
+                    noteDiv.style.backgroundColor = color;
+                    noteDiv.style.position = 'relative';
+                    //append delete button to note
+                    let btnDel = document.createElement('button');btnDel.style.position = "absolute";
+                    btnDel.style.top = '-10px';btnDel.style.left = '-10px';btnDel.style.backgroundColor = "red";
+                    btnDel.innerHTML = "&#10006;";btnDel.style.borderRadius="100%";btnDel.style.border='solid black';
+                    btnDel.title = "Delete Note";
+
+                    let btnEdit = document.createElement('button');
+                    btnEdit.style.position = "absolute";btnEdit.style.top = '-10px';btnEdit.style.left = '20px';btnEdit.style.backgroundColor = "yellow";
+                    btnEdit.innerHTML = "&#x270F;";btnEdit.style.borderRadius="100%";btnEdit.style.border='solid black';btnEdit.title="Edit Note";
+
+                    noteDiv.className = data[i]['id'];btnDel.className = data[i]['id'];newNote.className = data[i]['id'];
+                    btnDel.addEventListener('click',() => deleteNote(noteDiv.className));
+                    btnEdit.addEventListener('click',() => editNote(noteDiv.className));
+
+                    // append divs to content div
+                    noteDiv.appendChild(newNote);noteDiv.appendChild(btnDel);allNotesDiv.appendChild(noteDiv);
+                    noteDiv.appendChild(btnEdit);
+                }
+            })
+        }
+        // allow user to enter site with localstorage
+        function allowEnter(event) {
+            event.preventDefault();
+            // fetch users
+            fetch(TEMP_URL + "/users")
+            .then(resp => resp.json())
+            .then(data => {
+                // for each item in data
+                for (var i = 0; i < data.length; i++) {
+                    if (nameInput.value.toLowerCase() === data[i]['name']) {
+                        // set name in session to user's name
+                        localStorage.setItem('name',nameInput.value);
+                        console.log(localStorage.getItem('name') + " has entered.");
+                        // remote validation elements
+                        contentDiv.removeChild(userDiv); 
+
+                        // user's name
+                        let myName = document.createElement('h3');
+                        let firstLetter = localStorage.getItem('name')[0].toUpperCase();
+                        myName.innerHTML = "Hello, " + firstLetter + localStorage.getItem('name').substring(1,localStorage.getItem('name').length) + " <span style='color:darkred'>&hearts;</span>";
+                        myName.style.textAlign = 'left'; myName.style.fontFamily = '"Comic Sans MS", cursive, sans-serif'; myName.style.fontWeight = 'bold';
+                        contentDiv.appendChild(myName);
+                        // append the main page contents
+                        contentDiv.appendChild(addText);
+                        contentDiv.appendChild(document.createElement('br'));contentDiv.appendChild(document.createElement('br'));
+                        contentDiv.appendChild(textForm);
+                        allNotesDiv = document.getElementById('notes');
+                        loadNotes();
+                    } else {
+                        error.innerText = "I don't know you!";
+                        error.style.fontFamily = '"Comic Sans MS", cursive, sans-serif'; error.style.fontWeight = 'bold';
+                        userDiv.appendChild(error);
+                    }
+                }
+            })
+        }
+        // when one radio box is checked, disable all other colors
+        function radioBoxCheck(item) {
+            item.clicked = true; // new clicked radio box
+            if (item === checkColorOne) {
+                checkColorTwo.checked = false;checkColorThree.checked = false;checkColorFour.checked = false;checkColorFive.checked = false; 
+            } else if (item === checkColorTwo) {
+                checkColorOne.checked = false;checkColorThree.checked = false;checkColorFour.checked = false;checkColorFive.checked = false; 
+            } else if (item === checkColorThree) {
+                checkColorTwo.checked = false;checkColorOne.checked = false;checkColorFour.checked = false;checkColorFive.checked = false; 
+            } else if (item === checkColorFour) {
+                checkColorTwo.checked = false;checkColorThree.checked = false;checkColorOne.checked = false;checkColorFive.checked = false; 
+            } else if (item === checkColorFive) {
+                checkColorTwo.checked = false;checkColorThree.checked = false;checkColorFour.checked = false;checkColorOne.checked = false; 
+            }
+        }
+        // add the note to the page
+        function appendNote(event) {
+            event.preventDefault();
+            let noteDiv = document.createElement('div'); // add a new note to the page
+            noteDiv.style.border = 'solid'; noteDiv.style.justifyContent = 'center'; noteDiv.style.textAlign = 'center'; noteDiv.style.width = '200px'; noteDiv.style.height = '200px'; noteDiv.style.margin = '20px'; noteDiv.style.padding = '20px';
+            noteDiv.style.position = 'relative';
+            let newNote = document.createElement("p");
+            newNote.innerHTML = input.value;newNote.style.overflow = "auto";
+            newNote.style.fontFamily = '"Comic Sans MS", cursive, sans-serif';
+            newNote.style.fontWeight = "bold";newNote.style.width = '200px';newNote.style.height = '175px';
+            let color = null;
+            // set color of note
+            if (checkColorOne.checked === true) { noteDiv.style.backgroundColor = 'tomato';color='tomato' }
+            else if (checkColorTwo.checked === true) { noteDiv.style.backgroundColor = 'violet';color='violet' }
+            else if (checkColorThree.checked === true) { noteDiv.style.backgroundColor = 'goldenrod';color='goldenrod' }
+            else if (checkColorFour.checked === true) { noteDiv.style.backgroundColor = 'cornflowerblue';color='cornflowerblue' }
+            else if (checkColorFive.checked === true) { noteDiv.style.backgroundColor = 'lightpink';color='lightpink' }
+            //append delete button to note
+            let btnDel = document.createElement('button');btnDel.innerHTML = "&#10006;";btnDel.style.borderRadius="100%";btnDel.style.border='solid black';
+            btnDel.style.position = "absolute";btnDel.style.top = '-10px';btnDel.style.left = '-10px';btnDel.style.backgroundColor = "red";
+            btnDel.title = "Delete Note";
+
+            let btnEdit = document.createElement('button');
+            btnEdit.style.position = "absolute";btnEdit.style.top = '-10px';btnEdit.style.left = '20px';btnEdit.style.backgroundColor = "yellow";
+            btnEdit.innerHTML = "&#x270F;";btnEdit.style.borderRadius="100%";btnEdit.style.border='solid black';btnEdit.title = "Edit Note";
+
+            // append divs to content div
+            
+            var contentHeaders = {'Content-Type':'application/json','Accept':'application/json'}
+            var body = {'author':localStorage.getItem('name'),'color':color,'text':input.value};
+            var noteObject = {
+                method:"POST",
+                headers:contentHeaders,
+                body:JSON.stringify(body)
+            }
+            fetch(TEMP_URL + '/content',noteObject)
+            .then(resp => resp.json())
+            .then(data => {
+                noteDiv.className = data['id'];
+                btnDel.className = data['id'];
+                newNote.className = data['id'];
+                btnDel.addEventListener('click',() => deleteNote(noteDiv.className));
+                btnEdit.addEventListener('click',() => editNote(noteDiv.className));
+                console.log(data);
+            })
+            noteDiv.appendChild(newNote); noteDiv.appendChild(btnDel); allNotesDiv.appendChild(noteDiv);
+            noteDiv.appendChild(btnEdit);
+            input.value = "";
+        }
+        // edit an existing note
+        function editNote(id) {
+            let newInput = document.createElement('textarea');
+            newInput.style.fontFamily = '"Comic Sans MS", cursive, sans-serif'; newInput.style.fontWeight = "bold";
+            newInput.style.padding = "20px"; newInput.style.border = "solid black";
+            newInput.rows = 6, newInput.cols = 15;
+            // submit button
+            let submitEdit = document.createElement('button'); submitEdit.style.fontWeight = "bold";
+            submitEdit.style.fontFamily = '"Comic Sans MS", cursive, sans-serif'; submitEdit.style.border = "solid black";
+            submitEdit.innerText = "Submit Edit";
+            // line breaks above submit button
+            let br1 = document.createElement('br');
+            let br2 = document.createElement('br');
+            // new nodes
+            let note = null; let noteText = null;
+            let color = null; let author = null;
+
+            // validate the user
+            fetch(TEMP_URL + "/content/" + id)
+            .then(resp => resp.json())
+            .then(data => {
+                // if user wrote this note
+                if (data['author'] == localStorage.getItem('name')) {
+                    let items = document.getElementsByClassName(id);
+                    for (var i = 0; i < items.length; i++) {
+                        // set the note div
+                        if (items[i].nodeName.toLowerCase() === "div") {
+                            note = items[i];
+                            // console.log(note.childNodes);
+                        } // set the text inside div
+                        if (items[i].nodeName.toLowerCase() === "p") {
+                            newInput.value = items[i].innerHTML;
+                            noteText = items[i];
+                        }
+                    }
+                    color = data['color']; author = data['author'];
+                    // add edit nodes
+                    note.replaceChild(newInput,noteText);
+                    note.appendChild(br1); note.appendChild(br2);
+                    note.appendChild(submitEdit);
+                    submitEdit.addEventListener('click',function(){
+                        noteText.innerHTML = newInput.value;
+                        note.removeChild(newInput); note.removeChild(submitEdit);
+                        note.removeChild(br1); note.removeChild(br2);
+                        note.appendChild(noteText); // re-add updated text
+                        // new note object
+                        var contentHeaders = {'Content-Type':'application/json','Accept':'application/json'}
+                        var body = {'color':color,'author':author,'text':newInput.value};
+                        var newObj = {
+                            method:'PUT',
+                            headers:contentHeaders,
+                            body:JSON.stringify(body)
+                        }
+                        // post edit to db
+                        fetch(TEMP_URL + "/content/" + id, newObj)
+                        .then(resp => resp.json())
+                        .then(data => { console.log(data); })
+                    })
+                } else { alert('You cannot edit someone else\'s note!'); }
+            })
+        }
+        // delete a note from the wall
+        function deleteNote(id) {
+            // delete request to id
+            fetch(TEMP_URL + "/content/" + id, {method:'DELETE'})
+            .then(resp => resp.json())
+            .then(data => {
+                console.log(data);
+            })
+            // delete note from DOM
+            let delElems = document.getElementsByClassName(id);
+            for (var i = 0; i < delElems.length; i++) {
+                console.log(delElems[i])
+                allNotesDiv.removeChild(delElems[i]);
+            }
+        }
+        // toggle the show field button
+        function toggleField() {
+            if (showText === false) { // render form
+                showText = true; addText.innerHTML = "Close &#x2191;";
+                textForm.appendChild(input);textForm.appendChild(br1);
+                textForm.appendChild(checkColorOne);textForm.appendChild(checkColorTwo);textForm.appendChild(checkColorThree);
+                textForm.appendChild(checkColorFour);textForm.appendChild(checkColorFive);
+                textForm.appendChild(br2);textForm.appendChild(br3);textForm.appendChild(submit);
+            } else { // dont render form
+                showText = false; addText.innerHTML = "Create a New Note &#x2193;";
+                textForm.removeChild(input);textForm.removeChild(br1);textForm.appendChild(br2);textForm.appendChild(br3);
+                textForm.removeChild(checkColorOne);textForm.removeChild(checkColorTwo);textForm.removeChild(checkColorThree);
+                textForm.removeChild(checkColorFour);textForm.removeChild(checkColorFive);
+                textForm.removeChild(submit);
+            }
+        }
+    </script>
+        <!-- where form will be displayed -->
+        <div style="margin:40px;text-align:center;" id="content">
+        </div>
+
+        <!-- where note cards will be displayed -->
+        <div style="display:inline-flex;flex-wrap:wrap;justify-content:center" id="notes">
+        </div>
+    </body>
+</html>
