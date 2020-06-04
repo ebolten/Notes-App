@@ -36,15 +36,16 @@
     <body style='background-color:thistle'>
     <script>
         const TEMP_URL = "https://mighty-dusk-54820.herokuapp.com"; // a note has a user, color, and text
+        let font_family = "Trebuchet MS, sans-serif";
 
         // validate the user before they enter
         let nameInput = document.createElement('input'); nameInput.type = 'text';nameInput.style.fontWeight = 'bold';
         nameInput.style.width = '200px';nameInput.style.height = '30px';nameInput.style.border = 'solid black';
-        nameInput.style.fontFamily = '"Comic Sans MS", cursive, sans-serif';
+        nameInput.style.fontFamily = font_family;
         let lblEnterName = document.createElement('h1'); lblEnterName.innerText = "Enter Your Name: ";
-        lblEnterName.style.fontFamily = '"Comic Sans MS", cursive, sans-serif';
+        lblEnterName.style.fontFamily = font_family;
         let submitName = document.createElement('button'); submitName.innerText = "Enter";
-        submitName.style.fontFamily = '"Comic Sans MS", cursive, sans-serif';
+        submitName.style.fontFamily = font_family;
         submitName.style.width = '60px';submitName.style.height = '30px';submitName.style.border = 'solid black';
         submitName.style.fontWeight = 'bold';
         submitName.addEventListener('click',(event) => allowEnter(event));
@@ -55,14 +56,14 @@
         let showText = false; // whether to show text field or not
         let addText = document.createElement('button');
         addText.style.fontWeight = 'bold'; addText.innerHTML = "Create a New Note &#x2193;";
-        addText.style.fontFamily = '"Comic Sans MS", cursive, sans-serif'; addText.style.border = 'solid black';
+        addText.style.fontFamily = font_family; addText.style.border = 'solid black';
         addText.addEventListener('click',toggleField); // add text button
         let textForm = document.createElement('form'); // form to hold textarea
         let contentDiv = null; // the div that will hold content
         let input = document.createElement('textarea'); let submit = document.createElement('button');
-        input.style.fontFamily = '"Comic Sans MS", cursive, sans-serif';input.style.border = 'solid black';
+        input.style.fontFamily = font_family;input.style.border = 'solid black';
         input.style.fontWeight = 'bold'; input.style.padding = '20px';
-        submit.style.fontFamily = '"Comic Sans MS", cursive, sans-serif';submit.style.border = 'solid black';
+        submit.style.fontFamily = font_family;submit.style.border = 'solid black';
         let br1 = document.createElement('br'); let br2 = document.createElement('br'); let br3 = document.createElement('br');
 
         // colored radio buttons
@@ -109,7 +110,7 @@
                     let newNote = document.createElement("p");
                     newNote.innerHTML = data[i]['text'];newNote.style.overflow = "auto";
                     newNote.style.fontWeight = "bold";newNote.style.width = '200px';newNote.style.height = '175px';
-                    newNote.style.fontFamily = '"Comic Sans MS", cursive, sans-serif';
+                    newNote.style.fontFamily = font_family;
                     let color = data[i]['color'];
                     // set color of note
                     noteDiv.style.backgroundColor = color;
@@ -154,7 +155,7 @@
                         let myName = document.createElement('h3');
                         let firstLetter = localStorage.getItem('name')[0].toUpperCase();
                         myName.innerHTML = "Hello, " + firstLetter + localStorage.getItem('name').substring(1,localStorage.getItem('name').length) + " <span style='color:darkred'>&hearts;</span>";
-                        myName.style.textAlign = 'left'; myName.style.fontFamily = '"Comic Sans MS", cursive, sans-serif'; myName.style.fontWeight = 'bold';
+                        myName.style.textAlign = 'left'; myName.style.fontFamily = font_family; myName.style.fontWeight = 'bold';
                         contentDiv.appendChild(myName);
                         // append the main page contents
                         contentDiv.appendChild(addText);
@@ -164,7 +165,7 @@
                         loadNotes();
                     } else {
                         error.innerText = "I don't know you!";
-                        error.style.fontFamily = '"Comic Sans MS", cursive, sans-serif'; error.style.fontWeight = 'bold';
+                        error.style.fontFamily = font_family; error.style.fontWeight = 'bold';
                         userDiv.appendChild(error);
                     }
                 }
@@ -193,7 +194,7 @@
             noteDiv.style.position = 'relative';
             let newNote = document.createElement("p");
             newNote.innerHTML = input.value;newNote.style.overflow = "auto";
-            newNote.style.fontFamily = '"Comic Sans MS", cursive, sans-serif';
+            newNote.style.fontFamily = font_family;
             newNote.style.fontWeight = "bold";newNote.style.width = '200px';newNote.style.height = '175px';
             let color = null;
             // set color of note
@@ -237,12 +238,12 @@
         // edit an existing note
         function editNote(id) {
             let newInput = document.createElement('textarea');
-            newInput.style.fontFamily = '"Comic Sans MS", cursive, sans-serif'; newInput.style.fontWeight = "bold";
+            newInput.style.fontFamily = font_family; newInput.style.fontWeight = "bold";
             newInput.style.padding = "20px"; newInput.style.border = "solid black";
             newInput.rows = 6, newInput.cols = 15;
             // submit button
             let submitEdit = document.createElement('button'); submitEdit.style.fontWeight = "bold";
-            submitEdit.style.fontFamily = '"Comic Sans MS", cursive, sans-serif'; submitEdit.style.border = "solid black";
+            submitEdit.style.fontFamily = font_family; submitEdit.style.border = "solid black";
             submitEdit.innerText = "Submit Edit";
             // line breaks above submit button
             let br1 = document.createElement('br');
