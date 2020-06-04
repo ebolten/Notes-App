@@ -55,14 +55,16 @@
         // main page elements
         let showText = false; // whether to show text field or not
         let addText = document.createElement('button');
-        addText.style.backgroundColor = 'white';
-        addText.style.fontWeight = 'bold'; addText.innerHTML = "Create a New Note &#x2193;";
+        addText.style.backgroundColor = 'white';addText.style.width = "250px"; addText.style.height = "50px";
+        addText.style.fontSize = "20px"; addText.style.fontWeight = 'bold'; addText.innerHTML = "Create a New Note &#x2193;";
         addText.style.fontFamily = font_family; addText.style.border = 'solid black';
         addText.addEventListener('click',toggleField); // add text button
         let textForm = document.createElement('form'); // form to hold textarea
         let contentDiv = null; // the div that will hold content
         let input = document.createElement('textarea'); let submit = document.createElement('button');
-        submit.style.backgroundColor = 'white';
+        submit.style.backgroundColor = 'white';submit.style.width = "135px"; submit.style.height = "40px";
+        submit.style.fontSize = "20px";
+
         input.style.fontFamily = font_family;input.style.border = 'solid black';
         input.style.fontWeight = 'bold'; input.style.padding = '20px';
         submit.style.fontFamily = font_family;submit.style.border = 'solid black';
@@ -108,10 +110,10 @@
                 console.log(data);
                 for (var i = 0; i < data.length; i++) {
                     let noteDiv = document.createElement('div'); // add a new note to the page
-                    noteDiv.style.border = 'solid'; noteDiv.style.justifyContent = 'center'; noteDiv.style.textAlign = 'center'; noteDiv.style.width = '200px'; noteDiv.style.height = '200px'; noteDiv.style.margin = '20px'; noteDiv.style.padding = '20px';
+                    noteDiv.style.border = 'solid'; noteDiv.style.justifyContent = 'center'; noteDiv.style.textAlign = 'center'; noteDiv.style.width = '300px'; noteDiv.style.height = '300px'; noteDiv.style.margin = '20px'; noteDiv.style.padding = '20px';
                     let newNote = document.createElement("p");
                     newNote.innerHTML = data[i]['text'];newNote.style.overflow = "auto";
-                    newNote.style.fontWeight = "bold";newNote.style.width = '200px';newNote.style.height = '175px';
+                    newNote.style.fontWeight = "bold";newNote.style.width = '275px';newNote.style.height = '250px';
                     newNote.style.fontFamily = font_family;
                     let color = data[i]['color'];
                     // set color of note
@@ -194,7 +196,7 @@
         function appendNote(event) {
             event.preventDefault();
             let noteDiv = document.createElement('div'); // add a new note to the page
-            noteDiv.style.border = 'solid'; noteDiv.style.justifyContent = 'center'; noteDiv.style.textAlign = 'center'; noteDiv.style.width = '200px'; noteDiv.style.height = '200px'; noteDiv.style.margin = '20px'; noteDiv.style.padding = '20px';
+            noteDiv.style.border = 'solid'; noteDiv.style.justifyContent = 'center'; noteDiv.style.textAlign = 'center'; noteDiv.style.width = '300px'; noteDiv.style.height = '300px'; noteDiv.style.margin = '20px'; noteDiv.style.padding = '20px';
             noteDiv.style.position = 'relative';
             let newNote = document.createElement("p");
             newNote.innerHTML = input.value;newNote.style.overflow = "auto";
@@ -246,11 +248,12 @@
             let newInput = document.createElement('textarea');
             newInput.style.fontFamily = font_family; newInput.style.fontWeight = "bold";
             newInput.style.padding = "20px"; newInput.style.border = "solid black";
-            newInput.rows = 6, newInput.cols = 15;
+            newInput.rows = 12, newInput.cols = 30;
             // submit button
             let submitEdit = document.createElement('button'); submitEdit.style.fontWeight = "bold";
             submitEdit.style.backgroundColor = 'white';
             submitEdit.style.fontFamily = font_family; submitEdit.style.border = "solid black";
+            submitEdit.style.width = "150px"; submitEdit.style.height = "30px"; submitEdit.style.fontSize = "15px";
             submitEdit.innerText = "Submit Edit";
             // line breaks above submit button
             let br1 = document.createElement('br');
