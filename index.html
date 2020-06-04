@@ -121,13 +121,13 @@
                     let btnDel = document.createElement('button');btnDel.style.position = "absolute";
                     btnDel.style.backgroundColor = 'white';
                     btnDel.style.top = '-10px';btnDel.style.left = '-10px';btnDel.style.backgroundColor = "red";
-                    btnDel.innerHTML = "&#10006;";btnDel.style.borderRadius="100%";btnDel.style.border='solid black';
+                    btnDel.innerHTML = "<img style='width:15px;' src='x.png'/>";btnDel.style.borderRadius="100%";btnDel.style.border='solid black';
                     btnDel.title = "Delete Note";
 
                     let btnEdit = document.createElement('button');
                     btnEdit.style.backgroundColor = 'white';
                     btnEdit.style.position = "absolute";btnEdit.style.top = '-10px';btnEdit.style.left = '40px';btnEdit.style.backgroundColor = "yellow";
-                    btnEdit.innerHTML = "&#x270F;";btnEdit.style.borderRadius="100%";btnEdit.style.border='solid black';btnEdit.title="Edit Note";
+                    btnEdit.innerHTML = "<img style='width:15px;' src='pencil.png'/>";btnEdit.style.borderRadius="100%";btnEdit.style.border='solid black';btnEdit.title="Edit Note";
 
                     noteDiv.className = data[i]['id'];btnDel.className = data[i]['id'];newNote.className = data[i]['id'];
                     btnDel.addEventListener('click',() => deleteNote(noteDiv.className));
@@ -208,7 +208,7 @@
             else if (checkColorFour.checked === true) { noteDiv.style.backgroundColor = 'cornflowerblue';color='cornflowerblue' }
             else if (checkColorFive.checked === true) { noteDiv.style.backgroundColor = 'lightpink';color='lightpink' }
             //append delete button to note
-            let btnDel = document.createElement('button');btnDel.innerHTML = "&#10006;";btnDel.style.borderRadius="100%";btnDel.style.border='solid black';
+            let btnDel = document.createElement('button');btnDel.innerHTML = "<img style='width:15px;' src='x.png'/>";btnDel.style.borderRadius="100%";btnDel.style.border='solid black';
             btnDel.style.backgroundColor = 'white';
             btnDel.style.position = "absolute";btnDel.style.top = '-10px';btnDel.style.left = '-10px';btnDel.style.backgroundColor = "red";
             btnDel.title = "Delete Note";
@@ -216,7 +216,7 @@
             let btnEdit = document.createElement('button');
             btnEdit.style.backgroundColor = 'white';
             btnEdit.style.position = "absolute";btnEdit.style.top = '-10px';btnEdit.style.left = '40px';btnEdit.style.backgroundColor = "yellow";
-            btnEdit.innerHTML = "&#x270F;";btnEdit.style.borderRadius="100%";btnEdit.style.border='solid black';btnEdit.title = "Edit Note";
+            btnEdit.innerHTML = "<img style='width:15px;' src='pencil.png'/>";btnEdit.style.borderRadius="100%";btnEdit.style.border='solid black';btnEdit.title = "Edit Note";
 
             // append divs to content div
             
